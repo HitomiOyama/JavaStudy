@@ -1,4 +1,4 @@
-package guessNumberGameChallenge.logic;
+package guess.number.game.challenge.logic;
 
 import java.util.Scanner;
 import java.util.Random;

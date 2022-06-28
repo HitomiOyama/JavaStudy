@@ -9,9 +9,9 @@ public class PositiveNumberAdder {
         int sum = 0;
 
         while (num >= 0) {
+            sum = sum + num;
             System.out.println("数字を入力してください。");
             num = scanner.nextInt();
-            sum = sum + num;
         }
 
         scanner.close();

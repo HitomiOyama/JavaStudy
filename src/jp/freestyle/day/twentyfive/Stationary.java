@@ -3,17 +3,17 @@ package jp.freestyle.day.twentyfive;
 public class Stationary {
     private String name;
     private Amount amount;
-    private int num;
+    private int quantity;
 
-    public Stationary(String name, Amount amount, int num) {
+    public Stationary(String name, Amount amount, int quantity) {
         this.name = name;
         this.amount = amount;
-        this.num = num;
+        this.quantity = quantity;
+
+        System.out.printf("%sが%d本あります。%n", this.name, this.quantity);
     }
 
-    public int calcTotalAmount() {
-        int price = this.amount.price * this.num;
-        System.out.printf("%sが%d本あります。%n", this.name, this.num);
-        return price;
+    public double calcTotalAmount() {
+        return this.amount.multiplyPriceAndQuantity(this.quantity);
     }
 }

@@ -1,24 +1,27 @@
 package jp.freestyle.day.twentyfive;
 
 public class Amount {
-    public int price;
-    private double priceWithTax;
+    public double price;
+    public final double TAX_RATE = 1.08;
 
-    public Amount(int price) {
+    public Amount(double price) {
         this.price = price;
     }
 
-    public Amount add(int price) {
-        this.price = this.price + price;
-        return this;
+    public Amount add(double price) {
+        this.price += price;
+        return new Amount(this.price);
     }
 
     public Amount addTax() {
-        this.priceWithTax = this.price * 1.08;
-        return this;
+        return new Amount(price * TAX_RATE);
     }
 
     public void showValue() {
-        System.out.printf("金額は %.0f 円 です。%n", this.priceWithTax);
+        System.out.printf("金額は %.0f 円 です。%n", this.price);
+    }
+
+    public double multiplyPriceAndQuantity(int quantity) {
+        return this.price * quantity;
     }
 }
