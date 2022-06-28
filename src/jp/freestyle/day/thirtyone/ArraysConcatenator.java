@@ -3,6 +3,8 @@ package jp.freestyle.day.thirtyone;
 import java.util.Arrays;
 
 public class ArraysConcatenator {
+    private int pos = 0;
+
     public static void main(String[] args) {
         int[] firstArray = { 1, 2, 3000, 2000, 1000 };
         int[] secondArray = { 103, 102, 101 };
@@ -11,12 +13,20 @@ public class ArraysConcatenator {
         int arrayLength = firstArray.length + secondArray.length;
         int[] result = new int[arrayLength];
 
-        for (int i = 0; i < firstArray.length; i++) {
-            result[i] = firstArray[i];
+        ArraysConcatenator arraysConcatenator = new ArraysConcatenator();
+
+        int[] resultWithFirstArray = arraysConcatenator.concatArray(firstArray, result);
+        int[] resultWithSecondArray = arraysConcatenator.concatArray(secondArray, resultWithFirstArray);
+
+        System.out.println(Arrays.toString(resultWithSecondArray));
+    }
+
+    public int[] concatArray(int[] Array, int[] result) {
+        for (int arrayItem : Array) {
+            result[this.pos] = arrayItem;
+            this.pos++;
         }
-        for (int j = firstArray.length; j < firstArray.length + secondArray.length; j++) {
-            result[j] = secondArray[j - firstArray.length];
-        }
-        System.out.println(Arrays.toString(result));
+
+        return result;
     }
 }
