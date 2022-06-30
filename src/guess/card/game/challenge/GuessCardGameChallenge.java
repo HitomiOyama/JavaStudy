@@ -18,8 +18,8 @@ public class GuessCardGameChallenge {
         this.selectedSuitIndex = rnd.nextInt(3);
         this.selectedNumberIndex = rnd.nextInt(12);
 
-        System.out.println("selected suit is" + SUIT[selectedSuitIndex]);
-        System.out.println("selected number is" + NUMBER[selectedNumberIndex]);
+        System.out.println("selected suit is" + SUIT[this.selectedSuitIndex]);
+        System.out.println("selected number is" + NUMBER[this.selectedNumberIndex]);
 
         System.out.println("トランプを選んだよ");
         System.out.println("トランプの図柄を当ててね。2回まで挑戦できるよ。");
