@@ -1,17 +1,15 @@
-package guess.card.game;
+package guess.card.game.challenge;
 
 import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class GuessCardGame {
+public class GuessCardGameChallenge {
     private final String[] SUIT = new String[] { "ハート", "ダイヤ", "スペード", "クローバー" };
     private final String[] NUMBER = new String[] { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
     private int selectedSuitIndex;
     private int selectedNumberIndex;
-    private boolean isSuitCorrect = false;
-    private boolean isNumberCorrect = false;
     private Random rnd = new Random();
     private Scanner scanner = new Scanner(System.in);
 
@@ -24,22 +22,19 @@ public class GuessCardGame {
         System.out.println("selected number is" + NUMBER[selectedNumberIndex]);
 
         System.out.println("トランプを選んだよ");
-        System.out.println("トランプの図柄を当ててね");
+        System.out.println("トランプの図柄を当ててね。2回まで挑戦できるよ。");
         System.out.printf("0:ハート%n1:ダイヤ%n2:スペード%n3:クローバー%n");
 
         System.out.print("どれだと思う？: ");
 
         checkSuit();
 
-        System.out.println("次は数字を当ててね");
-        System.out.print("どれだと思う？: ");
-
-        checkNumber();
-
     }
 
     private void checkSuit() {
-        while (!this.isSuitCorrect) {
+        boolean isSuitCorrect = false;
+        int numOfTrial = 0;
+        while (!isSuitCorrect && numOfTrial <= 2) {
             try {
                 String inputtedChar = scanner.next();
                 int guessedSuitIndex = Integer.parseInt(inputtedChar);
@@ -49,22 +44,37 @@ public class GuessCardGame {
                     continue;
                 }
                 if (guessedSuitIndex != this.selectedSuitIndex) {
+                    numOfTrial++;
+
+                    if (numOfTrial == 2)
+                        break;
                     System.out.printf("残念！%sじゃないよ: ", SUIT[guessedSuitIndex]);
+
                     continue;
                 }
 
                 System.out.printf("正解！図柄は%sだよ%n", SUIT[this.selectedSuitIndex]);
-                this.isSuitCorrect = true;
+                isSuitCorrect = true;
+
+                System.out.println("次は数字を当ててね。４回まで挑戦できるよ。");
+                System.out.print("どれだと思う？: ");
+
+                checkNumber();
+                return;
 
             } catch (NumberFormatException e) {
                 System.out.print("数字で入力してください: ");
             }
 
         }
+
+        System.out.printf("残念！答えは%sの%sでした", SUIT[this.selectedSuitIndex], NUMBER[this.selectedNumberIndex]);
     }
 
     private void checkNumber() {
-        while (!this.isNumberCorrect) {
+        boolean isNumberCorrect = false;
+        int numOfTrial = 0;
+        while (!isNumberCorrect && numOfTrial <= 4) {
 
             String guessedNumber = scanner.next();
             if (!isValidNumberIndex(guessedNumber)) {
@@ -72,16 +82,23 @@ public class GuessCardGame {
                 continue;
             }
             if (!guessedNumber.equals(NUMBER[this.selectedNumberIndex])) {
+                numOfTrial++;
+                if (numOfTrial == 4)
+                    break;
                 System.out.printf("残念！%sじゃないよ:", guessedNumber, NUMBER[this.selectedNumberIndex]);
+
                 continue;
             }
 
             System.out.printf("正解！%sの%sだよ%n", SUIT[this.selectedSuitIndex], NUMBER[this.selectedNumberIndex]);
-            this.isNumberCorrect = true;
+            isNumberCorrect = true;
+            return;
 
         }
-
         scanner.close();
+
+        System.out.printf("残念！答えは%sの%sでした", SUIT[this.selectedSuitIndex], NUMBER[this.selectedNumberIndex]);
+
     }
 
     public boolean isValidSuitIndex(int i) {
