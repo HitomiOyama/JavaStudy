@@ -4,50 +4,104 @@ import java.util.Scanner;
 import java.util.Random;
 
 public class GuessNumberGame {
-
-    private int numOfTrials = 1;
-    private int answer;
-    private boolean isCorrect = false;
+    private final int INITIAL_TRIAL = 1;
+    private final int MAX_TRIALS = 5;
     private Random rnd = new Random();
-    private Scanner scanner = new Scanner(System.in);
 
     public void startGame() {
 
-        this.answer = rnd.nextInt(100);
+        int numOfTrials = INITIAL_TRIAL;
 
-        System.out.println("数字を当ててみてね。");
-        System.out.println("答えられるのは５回までだよ");
+        int correct = generateCorrect();
 
-        while (numOfTrials <= 5) {
+        showGameDescription();
 
-            System.out.printf("%d回目:", numOfTrials);
-            int i = scanner.nextInt();
+        int finalNumOfTrials = loopUntilPlayersAnswerIsCorrectOrReachMaxTrials(correct, numOfTrials);
 
-            if (i == this.answer) {
-                System.out.printf("すごい！%d回目で正解しちゃった!", this.numOfTrials);
-                this.isCorrect = true;
-                break;
+        if (!isChallengesUnderMaxTrials(MAX_TRIALS, finalNumOfTrials))
+            showMessageForFail(correct);
+
+    }
+
+    private int loopUntilPlayersAnswerIsCorrectOrReachMaxTrials(int correct, int numOfTrials) {
+        Scanner scanner = new Scanner(System.in);
+        boolean isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS,
+                numOfTrials);
+
+        while (isChallengesUnderMaxTrials) {
+            showNumOfTrials(numOfTrials);
+
+            int playersAnswer = scanner.nextInt();
+
+            if (isPlayersAnswerEqualsToCorrect(correct, playersAnswer)) {
+                showMessageForCorrect(numOfTrials);
+                return numOfTrials;
             }
 
-            if (i < this.answer) {
-                System.out.println("もっと大きい数字だよ");
-                this.numOfTrials++;
+            if (isPlayersAnswerUnderCorrect(correct, playersAnswer)) {
+                showMessageForSmaller();
+                numOfTrials = increaseNumOfTrials(numOfTrials);
+                isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS, numOfTrials);
                 continue;
             }
 
-            if (i > this.answer) {
-                System.out.println("もっと小さい数字だよ");
-                this.numOfTrials++;
-                continue;
-            }
+            showMessageForLarger();
+            numOfTrials = increaseNumOfTrials(numOfTrials);
+            isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS, numOfTrials);
+
+            continue;
 
         }
+
         scanner.close();
+        return numOfTrials;
 
-        if (isCorrect)
-            return;
+    }
 
-        System.out.printf("残念！正解は%dだよ", this.answer);
+    private int generateCorrect() {
+        return rnd.nextInt(100);
+    }
+
+    private void showGameDescription() {
+        System.out.println("数字を当ててみてね。");
+        System.out.printf("答えられるのは%d回までだよ%n", MAX_TRIALS);
+    }
+
+    private boolean isPlayersAnswerUnderCorrect(int correct, int playersAnswer) {
+        return correct > playersAnswer;
+    }
+
+    private boolean isPlayersAnswerEqualsToCorrect(int correct, int playersAnswer) {
+        return playersAnswer == correct;
+    }
+
+    private boolean isChallengesUnderMaxTrials(int MAX_TRIALS, int numOfTrials) {
+        return numOfTrials <= MAX_TRIALS;
+    }
+
+    private void showNumOfTrials(int numOfTrials) {
+        System.out.printf("%d回目:", numOfTrials);
+    }
+
+    private void showMessageForLarger() {
+        System.out.println("もっと小さい数字だよ");
+    }
+
+    private void showMessageForSmaller() {
+        System.out.println("もっと大きい数字だよ");
+    }
+
+    private int increaseNumOfTrials(int numOfTrials) {
+        numOfTrials++;
+        return numOfTrials;
+    }
+
+    private void showMessageForCorrect(int numOfTrials) {
+        System.out.printf("すごい！%d回目で正解しちゃった!", numOfTrials);
+    }
+
+    private void showMessageForFail(int correct) {
+        System.out.printf("残念！正解は%dだよ", correct);
     }
 
 }
