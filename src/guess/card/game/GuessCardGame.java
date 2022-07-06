@@ -58,8 +58,8 @@ public class GuessCardGame {
 
             } catch (NumberFormatException e) {
                 System.out.print("数字で入力してください: ");
+                scanner.next();
             }
-
         }
     }
 

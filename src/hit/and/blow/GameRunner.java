@@ -1,6 +1,8 @@
 package hit.and.blow;
 
 public class GameRunner {
-    HitAndBlow game = new HitAndBlow();
-    game.startGame();
+    public static void main(String[] args) {
+        HitAndBlow game = new HitAndBlow();
+        game.startGame();
+    }
 }
