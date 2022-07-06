@@ -9,53 +9,67 @@ public class BlackJack {
     Scanner scanner = new Scanner(System.in);
 
     public void playGame() {
-        int[] dealerCards = { rand.nextInt(12), rand.nextInt(12) };
-        int[] playerCards = { rand.nextInt(12), rand.nextInt(12) };
+        final int MAX_HAND = 21;
 
-        int dealerHand = 0;
-        int playerHand = 0;
+        int[] dealerCards = pickCards();
+        int[] playerCards = pickCards();
 
-        for (int i = 0; i < dealerCards.length; i++) {
-            if (i == 0 && dealerCards[i] == 1) {
-                if (dealerCards[i + 1] <= 10)
-                    dealerHand = dealerHand + 11;
-                dealerHand = dealerHand + SCORES[dealerCards[i]];
-            }
+        int dealerHand = cariculateHand(dealerCards);
+        int playerHand = cariculateHand(playerCards);
 
-            if (i > 0 && dealerCards[i] == 1) {
-                if (dealerHand <= 10)
-                    dealerHand = dealerHand + 11;
-                dealerHand = dealerHand + SCORES[dealerCards[i]];
-            }
+        showEachHands(dealerHand, playerHand);
 
-            dealerHand = dealerHand + SCORES[dealerCards[i]];
-        }
-
-        for (int i = 0; i < playerCards.length; i++) {
-            if (i == 0 && playerCards[i] == 1) {
-                if (playerCards[i + 1] <= 10)
-                    playerHand = playerHand + 11;
-                playerHand = playerHand + SCORES[playerCards[i]];
-            }
-
-            if (i > 0 && playerCards[i] == 1) {
-                if (playerHand <= 10)
-                    playerHand = playerHand + 11;
-                playerHand = playerHand + SCORES[playerCards[i]];
-            }
-
-            playerHand = playerHand + SCORES[playerCards[i]];
-        }
-
-        System.out.println("ディーラーの合計は" + dealerHand + "です。");
-        System.out.println("現在のの合計は" + playerHand + "です。");
-
-        if (dealerHand > 21) {
-            System.out.println("Dealer burst! You win!");
+        if (isDealerBurst(dealerHand, MAX_HAND))
             return;
+        if (isPlayerBurst(playerHand, MAX_HAND))
+            return;
+
+        playerHand = getPlayerFinalHand(playerHand, MAX_HAND);
+
+        if (isPlayerBurst(playerHand, MAX_HAND))
+            return;
+
+        dealerHand = getDealerFinalHand(dealerHand);
+
+        if (isDealerBurst(dealerHand, MAX_HAND))
+            return;
+
+        if (isPlayerWin(playerHand, dealerHand))
+            return;
+
+        showResultMessage("You lose!");
+        return;
+    }
+
+    private int[] pickCards() {
+        int[] cards = { rand.nextInt(12), rand.nextInt(12) };
+        return cards;
+    }
+
+    private int cariculateHand(int[] cards) {
+        int hand = 0;
+
+        for (int i = 0; i < cards.length; i++) {
+            if (i == 0 && cards[i] == 1) {
+                if (cards[i + 1] <= 10)
+                    hand = hand + 11;
+                hand = hand + SCORES[cards[i]];
+            }
+
+            if (i > 0 && cards[i] == 1) {
+                if (hand <= 10)
+                    hand = hand + 11;
+                hand = hand + SCORES[cards[i]];
+            }
+
+            hand = hand + SCORES[cards[i]];
         }
 
-        while (playerHand < 21) {
+        return hand;
+    }
+
+    private int getPlayerFinalHand(int playerHand, int maxHand) {
+        while (!playerBurst(playerHand, maxHand)) {
             System.out.println("もう一枚カードを引きますか？(Y/N):");
             String playerDecision = scanner.next();
             if (playerDecision.equals("Y")) {
@@ -71,14 +85,15 @@ public class BlackJack {
                 continue;
             }
 
-            break;
-        }
+            if (playerDecision.equals("N"))
+                break;
 
-        if (playerHand > 21) {
-            System.out.println("Burst! You lose!");
-            return;
+            continue;
         }
+        return playerHand;
+    }
 
+    private int getDealerFinalHand(int dealerHand) {
         while (dealerHand < 17) {
             int newCardIndex = rand.nextInt(13);
             int newCardScore;
@@ -89,18 +104,40 @@ public class BlackJack {
             dealerHand = dealerHand + newCardScore;
             System.out.println("ディーラーの合計は" + dealerHand + "です");
         }
+        return dealerHand;
+    }
 
-        if (dealerHand > 21) {
-            System.out.println("Dealer burst! You win!");
-            return;
+    private boolean playerBurst(int playerHand, int maxHand) {
+        return playerHand > maxHand;
+    }
+
+    private void showEachHands(int dealerHand, int playerHand) {
+        System.out.println("ディーラーの合計は" + dealerHand + "です。");
+        System.out.println("現在の合計は" + playerHand + "です。");
+    }
+
+    private void showResultMessage(String message) {
+        System.out.println(message);
+    }
+
+    private boolean isDealerBurst(int dealerHand, int maxHand) {
+        if (dealerHand > maxHand) {
+            showResultMessage("Dealer burst! you win!");
         }
+        return dealerHand > maxHand;
+    }
 
+    private boolean isPlayerBurst(int playerHand, int maxHand) {
+        if (playerHand > maxHand) {
+            showResultMessage("Burst! you lose!");
+        }
+        return playerHand > maxHand;
+    }
+
+    private boolean isPlayerWin(int playerHand, int dealerHand) {
         if (playerHand > dealerHand) {
-            System.out.println("You win!");
-            return;
+            showResultMessage("you win!");
         }
-
-        System.out.println("You lose!");
-        return;
+        return playerHand > dealerHand;
     }
 }
