@@ -2,8 +2,8 @@ package guess.card.game;
 
 public class GameRunner {
     public static void main(String[] args) {
-        GuessCardGame logic = new GuessCardGame();
+        GuessCardGame game = new GuessCardGame();
 
-        logic.playGame();
+        game.play();
     }
 }

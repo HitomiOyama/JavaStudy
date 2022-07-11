@@ -6,93 +6,140 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GuessCardGame {
-    private final String[] SUIT = new String[] { "ハート", "ダイヤ", "スペード", "クローバー" };
-    private final String[] NUMBER = new String[] { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+    private final String[] SUITS = new String[] { "ハート", "ダイヤ", "スペード", "クローバー" };
+    private final String[] NUMBERS = new String[] { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
     private int selectedSuitIndex;
     private int selectedNumberIndex;
-    private boolean isSuitCorrect = false;
-    private boolean isNumberCorrect = false;
     private Random rnd = new Random();
     private Scanner scanner = new Scanner(System.in);
 
-    public void playGame() {
+    public void play() {
 
-        this.selectedSuitIndex = rnd.nextInt(3);
-        this.selectedNumberIndex = rnd.nextInt(12);
+        this.selectedSuitIndex = compSelectSuit();
+        this.selectedNumberIndex = compSelectNumber();
 
-        System.out.println("selected suit is" + SUIT[selectedSuitIndex]);
-        System.out.println("selected number is" + NUMBER[selectedNumberIndex]);
+        showCheatMessage(); // 動作確認用
 
-        System.out.println("トランプを選んだよ");
-        System.out.println("トランプの図柄を当ててね");
-        System.out.printf("0:ハート%n1:ダイヤ%n2:スペード%n3:クローバー%n");
-
-        System.out.print("どれだと思う？: ");
+        showGuidanceForGuessSuit();
 
         checkSuit();
 
-        System.out.println("次は数字を当ててね");
-        System.out.print("どれだと思う？: ");
+        showGuidanceForGuessNumber();
 
         checkNumber();
 
     }
 
+    private int compSelectSuit() {
+        int maxSuitIndex = SUITS.length - 1;
+        return rnd.nextInt(maxSuitIndex);
+    }
+
+    private int compSelectNumber() {
+        int maxNumberIndex = NUMBERS.length - 1;
+        return rnd.nextInt(maxNumberIndex);
+    }
+
+    private void showCheatMessage() {
+        System.out.println("selected suit is" + SUITS[selectedSuitIndex]);
+        System.out.println("selected number is" + NUMBERS[selectedNumberIndex]);
+    }
+
+    private void showGuidanceForGuessSuit() {
+        System.out.println("トランプを選んだよ");
+        System.out.println("トランプの図柄を当ててね");
+        System.out.printf("0:ハート%n1:ダイヤ%n2:スペード%n3:クローバー%n");
+        System.out.print("どれだと思う？: ");
+    }
+
+    private void showGuidanceForGuessNumber() {
+        System.out.println("次は数字を当ててね");
+        System.out.print("どれだと思う？: ");
+    }
+
     private void checkSuit() {
-        while (!this.isSuitCorrect) {
+        boolean isSuitCorrect = false;
+        while (!isSuitCorrect) {
             try {
                 String inputtedChar = scanner.next();
                 int guessedSuitIndex = Integer.parseInt(inputtedChar);
 
                 if (!isValidSuitIndex(guessedSuitIndex)) {
-                    System.out.print("0~3の数字を入力してください: ");
+                    showErrorMessageInvalidNumber();
                     continue;
                 }
                 if (guessedSuitIndex != this.selectedSuitIndex) {
-                    System.out.printf("残念！%sじゃないよ: ", SUIT[guessedSuitIndex]);
+                    showFailMessage(SUITS[guessedSuitIndex]);
                     continue;
                 }
 
-                System.out.printf("正解！図柄は%sだよ%n", SUIT[this.selectedSuitIndex]);
-                this.isSuitCorrect = true;
+                showCorrectSuitMessage();
+                isSuitCorrect = true;
 
             } catch (NumberFormatException e) {
-                System.out.print("数字で入力してください: ");
+                showErrorMessageNotNumber();
                 scanner.next();
             }
         }
     }
 
+    private void showCorrectSuitMessage() {
+        System.out.printf("正解！図柄は%sだよ%n", SUITS[this.selectedSuitIndex]);
+    }
+
+    private void showErrorMessageNotNumber() {
+        System.out.print("数字で入力してください: ");
+    }
+
+    private void showErrorMessageInvalidNumber() {
+        System.out.print("0~3の数字を入力してください: ");
+    }
+
     private void checkNumber() {
-        while (!this.isNumberCorrect) {
+        boolean isNumberCorrect = false;
+        while (!isNumberCorrect) {
 
             String guessedNumber = scanner.next();
             if (!isValidNumberIndex(guessedNumber)) {
-                System.out.print("2～10の数字またはA,J,Q,Kのいずれかを入力してください:");
+                showErrorMessageInvalidString();
                 continue;
             }
-            if (!guessedNumber.equals(NUMBER[this.selectedNumberIndex])) {
-                System.out.printf("残念！%sじゃないよ:", guessedNumber, NUMBER[this.selectedNumberIndex]);
+            if (!guessedNumber.equals(NUMBERS[this.selectedNumberIndex])) {
+                showFailMessage(guessedNumber);
                 continue;
             }
 
-            System.out.printf("正解！%sの%sだよ%n", SUIT[this.selectedSuitIndex], NUMBER[this.selectedNumberIndex]);
-            this.isNumberCorrect = true;
+            showCorrectMessage();
+            isNumberCorrect = true;
 
         }
 
         scanner.close();
     }
 
+    private void showCorrectMessage() {
+        System.out.printf("正解！%sの%sだよ%n", SUITS[this.selectedSuitIndex], NUMBERS[this.selectedNumberIndex]);
+    }
+
+    private void showFailMessage(String playerInput) {
+        System.out.printf("残念！%sじゃないよ:", playerInput);
+    }
+
+    private void showErrorMessageInvalidString() {
+        System.out.print("2～10の数字またはA,J,Q,Kのいずれかを入力してください:");
+    }
+
     public boolean isValidSuitIndex(int i) {
-        if (i >= 0 && i <= 3)
+        int maxSuitIndex = SUITS.length - 1;
+        boolean isWithinSuitIndexRange = i >= 0 && i <= maxSuitIndex;
+        if (isWithinSuitIndexRange)
             return true;
         return false;
     }
 
     public boolean isValidNumberIndex(String i) {
-        ArrayList<String> number = new ArrayList<String>(Arrays.asList(NUMBER));
-        if (number.contains(i))
+        ArrayList<String> numberList = new ArrayList<String>(Arrays.asList(NUMBERS));
+        if (numberList.contains(i))
             return true;
         return false;
     }

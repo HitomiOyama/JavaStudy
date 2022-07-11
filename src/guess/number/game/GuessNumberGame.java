@@ -2,6 +2,7 @@ package guess.number.game;
 
 import java.util.Scanner;
 import java.util.Random;
+import java.util.InputMismatchException;
 
 public class GuessNumberGame {
     private final int INITIAL_TRIAL = 1;
@@ -32,30 +33,40 @@ public class GuessNumberGame {
             showNumOfTrials(numOfTrials);
 
             int playersAnswer = scanner.nextInt();
+            try {
 
-            if (isPlayersAnswerEqualsToCorrect(correct, playersAnswer)) {
-                showMessageForCorrect(numOfTrials);
-                return numOfTrials;
-            }
+                if (isPlayersAnswerEqualsToCorrect(correct, playersAnswer)) {
+                    showMessageForCorrect(numOfTrials);
+                    return numOfTrials;
+                }
 
-            if (isPlayersAnswerUnderCorrect(correct, playersAnswer)) {
-                showMessageForSmaller();
+                if (isPlayersAnswerUnderCorrect(correct, playersAnswer)) {
+                    numOfTrials = increaseNumOfTrials(numOfTrials);
+                    isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS, numOfTrials);
+                    showMessageForSmaller();
+                    continue;
+                }
+
                 numOfTrials = increaseNumOfTrials(numOfTrials);
                 isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS, numOfTrials);
+                showMessageForLarger();
+
                 continue;
+
+            } catch (InputMismatchException e) {
+
+                showErrorMessage();
             }
-
-            showMessageForLarger();
-            numOfTrials = increaseNumOfTrials(numOfTrials);
-            isChallengesUnderMaxTrials = isChallengesUnderMaxTrials(MAX_TRIALS, numOfTrials);
-
-            continue;
 
         }
 
         scanner.close();
         return numOfTrials;
 
+    }
+
+    private void showErrorMessage() {
+        System.out.println("数字で入力してください");
     }
 
     private int generateCorrect() {
